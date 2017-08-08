@@ -135,9 +135,9 @@ impl Container {
     /// ```
     pub fn push<P: AsRef<Path>>(&mut self, source: P, dest: &str, recursive: bool) -> io::Result<()> {
         if recursive {
-            lxc(&["file", "push", "-r", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.0, dest)])
+            lxc(&["file", "push", "--uid=0", "--gid=0", "-r", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.0, dest)])
         } else {
-            lxc(&["file", "push", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.0, dest)])
+            lxc(&["file", "push", "--uid=0", "--gid=0", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.0, dest)])
         }
     }
 
