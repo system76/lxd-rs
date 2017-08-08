@@ -1,4 +1,5 @@
 use std::io;
+use std::path::Path;
 
 use super::{lxc, Location};
 
@@ -97,8 +98,47 @@ impl Container {
     /// let mut container = Container::new(Location::Local, "test-mount", "ubuntu:16.04").unwrap();
     /// container.mount("source", ".", "/root/source").unwrap();
     /// ```
-    pub fn mount(&mut self, name: &str, source: &str, dest: &str) -> io::Result<()> {
-        lxc(&["config", "device", "add", &self.0, name, "disk", &format!("source={}", source), &format!("path={}", dest)])
+    pub fn mount<P: AsRef<Path>>(&mut self, name: &str, source: P, dest: &str) -> io::Result<()> {
+        lxc(&["config", "device", "add", &self.0, name, "disk", &format!("source={}", source.as_ref().display()), &format!("path={}", dest)])
+    }
+
+    /// Push a file to the LXD container
+    ///
+    /// # Arguments
+    ///
+    /// * `source` - The source of the file in the host
+    /// * `dest` - The destination of the file in the container
+    /// * `recursive` - The source is a directory
+    ///
+    /// # Return
+    ///
+    /// An empty tuple on success
+    ///
+    /// # Errors
+    ///
+    /// Errors that are encountered while mounting will be returned
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// extern crate lxd;
+    /// extern crate tempdir;
+    ///
+    /// use lxd::{Container, Location};
+    /// use tempdir::TempDir;
+    ///
+    /// fn main() {
+    ///     let mut container = Container::new(Location::Local, "test-push", "ubuntu:16.04").unwrap();
+    ///     let tmp = TempDir::new("").unwrap();
+    ///     container.push(tmp.path(), "/root", true).unwrap();
+    /// }
+    /// ```
+    pub fn push<P: AsRef<Path>>(&mut self, source: P, dest: &str, recursive: bool) -> io::Result<()> {
+        if recursive {
+            lxc(&["file", "push", "-r", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.0, dest)])
+        } else {
+            lxc(&["file", "push", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.0, dest)])
+        }
     }
 
     /// Pull a file from the LXD container
@@ -120,17 +160,24 @@ impl Container {
     /// # Example
     ///
     /// ```
-    /// use lxd::{Container, Location};
+    /// extern crate lxd;
+    /// extern crate tempdir;
     ///
-    /// let mut container = Container::new(Location::Local, "test-pull", "ubuntu:16.04").unwrap();
-    /// container.exec(&["mkdir", "artifacts"]).unwrap();
-    /// container.pull("/root/artifacts", "target/artifacts", false).unwrap();
+    /// use lxd::{Container, Location};
+    /// use tempdir::TempDir;
+    ///
+    /// fn main() {
+    ///     let mut container = Container::new(Location::Local, "test-pull", "ubuntu:16.04").unwrap();
+    ///     container.exec(&["mkdir", "artifacts"]).unwrap();
+    ///     let tmp = TempDir::new("").unwrap();
+    ///     container.pull("/root/artifacts", tmp.path(), true).unwrap();
+    /// }
     /// ```
-    pub fn pull(&mut self, source: &str, dest: &str, recursive: bool) -> io::Result<()> {
+    pub fn pull<P: AsRef<Path>>(&mut self, source: &str, dest: P, recursive: bool) -> io::Result<()> {
         if recursive {
-            lxc(&["file", "pull", "-r", &format!("{}/{}", self.0, source), dest])
+            lxc(&["file", "pull", "-r", &format!("{}/{}", self.0, source), &format!("{}", dest.as_ref().display())])
         } else {
-            lxc(&["file", "pull", &format!("{}/{}", self.0, source), dest])
+            lxc(&["file", "pull", &format!("{}/{}", self.0, source), &format!("{}", dest.as_ref().display())])
         }
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "lxd"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Jeremy Soller <jackpot51@gmail.com>"]
 description = "A Rust library for controlling LXD"
 documentation = "https://docs.rs/lxd"
@@ -16,3 +16,6 @@ path = "src/lib.rs"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
+
+[dev-dependencies]
+tempdir = "0.3"
