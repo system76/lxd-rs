@@ -113,7 +113,7 @@ impl Info {
     pub fn new(location: Location, name: &str) -> io::Result<Self> {
         let json = match location {
             Location::Local => lxc_output(&["list", &format!("{}$", name), "--format", "json"])?,
-            Location::Remote(remote) => lxc_output(&["list", &format!("{}:", remote), &format!("{}$", name), "--fast", "--format", "json"])?
+            Location::Remote(remote) => lxc_output(&["list", &format!("{}:", remote), &format!("{}$", name), "--format", "json"])?
         };
 
         match serde_json::from_slice::<Vec<Self>>(&json) {

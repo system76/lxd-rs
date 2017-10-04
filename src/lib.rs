@@ -8,11 +8,13 @@ use std::process::{Command, Stdio};
 use std::io;
 
 pub use container::Container;
+pub use image::Image;
 pub use info::Info;
 pub use location::Location;
 pub use snapshot::Snapshot;
 
 mod container;
+mod image;
 mod info;
 mod location;
 mod snapshot;

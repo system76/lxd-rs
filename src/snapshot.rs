@@ -22,14 +22,6 @@ impl<'a> Snapshot<'a> {
     /// # Errors
     ///
     /// Errors that are encountered while creating snapshot will be returned
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use lxd::{Container, Location, Snapshot};
-    ///
-    /// let container = Container::new(Location::Local, "test-snapshot-new", "ubuntu:16.04").unwrap();
-    /// Snapshot::new(&container, "test-snapshot-new").unwrap();
     /// ```
     pub fn new(container: &'a Container, name: &str) -> io::Result<Snapshot<'a>> {
         lxc(&["snapshot", container.name(), name])?;
