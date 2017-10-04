@@ -1,6 +1,5 @@
 //! A Rust library for controlling LXD
 
-extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
@@ -11,10 +10,12 @@ use std::io;
 pub use container::Container;
 pub use info::Info;
 pub use location::Location;
+pub use snapshot::Snapshot;
 
 mod container;
 mod info;
 mod location;
+mod snapshot;
 
 fn lxc(args: &[&str]) -> io::Result<()> {
     let mut cmd = Command::new("lxc");

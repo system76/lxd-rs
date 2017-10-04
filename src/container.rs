@@ -3,8 +3,10 @@ use std::path::Path;
 
 use super::{lxc, Location};
 
-/// An LXD container
-pub struct Container(String);
+/// An LXD ephemeral container
+pub struct Container {
+    name: String
+}
 
 impl Container {
     /// Create a new LXD container
@@ -41,7 +43,14 @@ impl Container {
         // Hack to wait for network up and running
         lxc(&["exec", &full_name, "--mode=non-interactive", "-n", "--", "dhclient"])?;
 
-        Ok(Container(full_name))
+        Ok(Container {
+            name: full_name
+        })
+    }
+
+    /// Get full name of container
+    pub fn name(&self) -> &str {
+        &self.name
     }
 
     /// Run a command in an LXD container
@@ -67,7 +76,7 @@ impl Container {
     /// container.exec(&["echo", "hello"]).unwrap();
     /// ```
     pub fn exec(&mut self, command: &[&str]) -> io::Result<()> {
-        let mut args = vec!["exec", &self.0, "--"];
+        let mut args = vec!["exec", &self.name, "--"];
         for arg in command.as_ref().iter() {
             args.push(arg.as_ref());
         }
@@ -99,7 +108,7 @@ impl Container {
     /// container.mount("source", ".", "/root/source").unwrap();
     /// ```
     pub fn mount<P: AsRef<Path>>(&mut self, name: &str, source: P, dest: &str) -> io::Result<()> {
-        lxc(&["config", "device", "add", &self.0, name, "disk", &format!("source={}", source.as_ref().display()), &format!("path={}", dest)])
+        lxc(&["config", "device", "add", &self.name, name, "disk", &format!("source={}", source.as_ref().display()), &format!("path={}", dest)])
     }
 
     /// Push a file to the LXD container
@@ -135,9 +144,9 @@ impl Container {
     /// ```
     pub fn push<P: AsRef<Path>>(&mut self, source: P, dest: &str, recursive: bool) -> io::Result<()> {
         if recursive {
-            lxc(&["file", "push", "-r", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.0, dest)])
+            lxc(&["file", "push", "-r", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.name, dest)])
         } else {
-            lxc(&["file", "push", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.0, dest)])
+            lxc(&["file", "push", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.name, dest)])
         }
     }
 
@@ -175,15 +184,15 @@ impl Container {
     /// ```
     pub fn pull<P: AsRef<Path>>(&mut self, source: &str, dest: P, recursive: bool) -> io::Result<()> {
         if recursive {
-            lxc(&["file", "pull", "-r", &format!("{}/{}", self.0, source), &format!("{}", dest.as_ref().display())])
+            lxc(&["file", "pull", "-r", &format!("{}/{}", self.name, source), &format!("{}", dest.as_ref().display())])
         } else {
-            lxc(&["file", "pull", &format!("{}/{}", self.0, source), &format!("{}", dest.as_ref().display())])
+            lxc(&["file", "pull", &format!("{}/{}", self.name, source), &format!("{}", dest.as_ref().display())])
         }
     }
 }
 
 impl Drop for Container {
     fn drop(&mut self) {
-        let _ = lxc(&["stop", &self.0]);
+        let _ = lxc(&["stop", &self.name]);
     }
 }
