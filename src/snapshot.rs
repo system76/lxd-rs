@@ -4,7 +4,7 @@ use super::{lxc, Container};
 
 /// An LXD ephemeral snapshot
 pub struct Snapshot<'a> {
-    _container: &'a mut Container,
+    _container: &'a Container,
     name: String
 }
 
@@ -28,10 +28,10 @@ impl<'a> Snapshot<'a> {
     /// ```
     /// use lxd::{Container, Location, Snapshot};
     ///
-    /// let mut container = Container::new(Location::Local, "test-snapshot", "ubuntu:16.04").unwrap();
-    /// Snapshot::new(&mut container, "test-snapshot").unwrap();
+    /// let container = Container::new(Location::Local, "test-snapshot-new", "ubuntu:16.04").unwrap();
+    /// Snapshot::new(&container, "test-snapshot-new").unwrap();
     /// ```
-    pub fn new(container: &'a mut Container, name: &str) -> io::Result<Snapshot<'a>> {
+    pub fn new(container: &'a Container, name: &str) -> io::Result<Snapshot<'a>> {
         lxc(&["snapshot", container.name(), name])?;
 
         let full_name = format!("{}/{}", container.name(), name);
@@ -60,8 +60,8 @@ impl<'a> Snapshot<'a> {
     /// ```
     /// use lxd::{Container, Location, Snapshot};
     ///
-    /// let mut container = Container::new(Location::Local, "test-publish", "ubuntu:16.04").unwrap();
-    /// let snapshot = Snapshot::new(&mut container, "test-publish").unwrap();
+    /// let container = Container::new(Location::Local, "test-snapshot-publish", "ubuntu:16.04").unwrap();
+    /// let snapshot = Snapshot::new(&container, "test-snapshot-publish").unwrap();
     /// snapshot.publish("test-publish").unwrap();
     /// ```
     pub fn publish(&self, alias: &str) -> io::Result<()> {

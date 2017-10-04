@@ -1,7 +1,7 @@
 use std::io;
 use std::path::Path;
 
-use super::{lxc, Location};
+use super::{lxc, Location, Snapshot};
 
 /// An LXD ephemeral container
 pub struct Container {
@@ -51,6 +51,32 @@ impl Container {
     /// Get full name of container
     pub fn name(&self) -> &str {
         &self.name
+    }
+
+    /// Create a snapshot of a container
+    ///
+    /// # Arguments
+    ///
+    /// * `name` - name of the new snapshot
+    ///
+    /// # Return
+    ///
+    /// A new snapshot on success
+    ///
+    /// # Errors
+    ///
+    /// Errors that are encountered while creating snapshot will be returned
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lxd::{Container, Location, Snapshot};
+    ///
+    /// let container = Container::new(Location::Local, "test-snapshot", "ubuntu:16.04").unwrap();
+    /// container.snapshot("test-snapshot").unwrap();
+    /// ```
+    pub fn snapshot<'a>(&'a self, name: &str) -> io::Result<Snapshot<'a>> {
+        Snapshot::new(self, name)
     }
 
     /// Run a command in an LXD container
