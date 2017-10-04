@@ -23,7 +23,7 @@ impl Container {
     ///
     /// # Errors
     ///
-    /// Errors that are encountered while creating will be returned
+    /// Errors that are encountered while creating container will be returned
     ///
     /// # Example
     ///
@@ -125,7 +125,7 @@ impl Container {
     ///
     /// # Errors
     ///
-    /// Errors that are encountered while mounting will be returned
+    /// Errors that are encountered while pushing will be returned
     ///
     /// # Example
     ///
@@ -164,7 +164,7 @@ impl Container {
     ///
     /// # Errors
     ///
-    /// Errors that are encountered while mounting will be returned
+    /// Errors that are encountered while pulling will be returned
     ///
     /// # Example
     ///

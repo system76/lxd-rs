@@ -17,11 +17,11 @@ impl<'a> Snapshot<'a> {
     ///
     /// # Return
     ///
-    /// An empty tuple on success
+    /// A new snapshot on success
     ///
     /// # Errors
     ///
-    /// Errors that are encountered while executing will be returned
+    /// Errors that are encountered while creating snapshot will be returned
     ///
     /// # Example
     ///
@@ -39,6 +39,33 @@ impl<'a> Snapshot<'a> {
             _container: container,
             name: full_name
         })
+    }
+
+    /// Publish snapshot as an image
+    ///
+    /// # Arguments
+    ///
+    /// * `alias` - alias of the new image
+    ///
+    /// # Return
+    ///
+    /// An empty tuple on success
+    ///
+    /// # Errors
+    ///
+    /// Errors that are encountered while publishing will be returned
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lxd::{Container, Location, Snapshot};
+    ///
+    /// let mut container = Container::new(Location::Local, "test-publish", "ubuntu:16.04").unwrap();
+    /// let snapshot = Snapshot::new(&mut container, "test-publish").unwrap();
+    /// snapshot.publish("test-publish").unwrap();
+    /// ```
+    pub fn publish(&self, alias: &str) -> io::Result<()> {
+        lxc(&["publish", &self.name, "--alias", alias])
     }
 }
 
