@@ -1,6 +1,6 @@
 [package]
 name = "lxd"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Jeremy Soller <jackpot51@gmail.com>"]
 description = "A Rust library for controlling LXD"
 documentation = "https://docs.rs/lxd"
