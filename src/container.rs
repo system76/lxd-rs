@@ -77,7 +77,9 @@ impl Container {
             Location::Remote(remote) => format!("{}:{}", remote, name)
         };
 
-        lxc(&["launch", base, &full_name, "-e", "-n", "lxdbr0", "-c", "security.privileged=true"])?;
+        lxc(&["launch", base, &full_name, "-e", "-n", "lxdbr0",
+            "-c", "security.privileged=true",
+            "-c", "raw.lxc=lxc.apparmor.profile=unconfined"])?;
 
         // Hack to wait for network up and running
         lxc(&["exec", &full_name, "--mode=non-interactive", "-n", "--", "dhclient"])?;
