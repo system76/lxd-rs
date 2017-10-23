@@ -48,6 +48,45 @@ impl Container {
         })
     }
 
+    /// Create a new privileged LXD container
+    ///
+    /// # Arguments
+    ///
+    /// * `location` - The location of the host
+    /// * `name` - The name of the container
+    /// * `base` - The base distribution to use, `ubuntu:16.04` for example
+    ///
+    /// # Return
+    ///
+    /// The newly created LXD container
+    ///
+    /// # Errors
+    ///
+    /// Errors that are encountered while creating container will be returned
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lxd::{Container, Location};
+    ///
+    /// let mut container = unsafe { Container::new_privileged(Location::Local, "test-new-privileged", "ubuntu:16.04").unwrap() };
+    /// ```
+    pub unsafe fn new_privileged(location: Location, name: &str, base: &str) -> io::Result<Self> {
+        let full_name = match location {
+            Location::Local => format!("{}", name),
+            Location::Remote(remote) => format!("{}:{}", remote, name)
+        };
+
+        lxc(&["launch", base, &full_name, "-e", "-n", "lxdbr0", "-c", "security.privileged=true"])?;
+
+        // Hack to wait for network up and running
+        lxc(&["exec", &full_name, "--mode=non-interactive", "-n", "--", "dhclient"])?;
+
+        Ok(Container {
+            name: full_name
+        })
+    }
+
     /// Get full name of container
     pub fn name(&self) -> &str {
         &self.name
