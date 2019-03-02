@@ -211,9 +211,22 @@ impl Container {
     /// ```
     pub fn push<P: AsRef<Path>>(&mut self, source: P, dest: &str, recursive: bool) -> io::Result<()> {
         if recursive {
-            lxc(&["file", "push", "-r", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.name, dest)])
+            lxc(&[
+                "file",
+                "push",
+                "--quiet",
+                "--recursive",
+                &format!("{}", source.as_ref().display()),
+                &format!("{}/{}", self.name, dest)
+            ])
         } else {
-            lxc(&["file", "push", &format!("{}", source.as_ref().display()), &format!("{}/{}", self.name, dest)])
+            lxc(&[
+                "file",
+                "push",
+                "--quiet",
+                &format!("{}", source.as_ref().display()),
+                &format!("{}/{}", self.name, dest)
+            ])
         }
     }
 
@@ -251,9 +264,22 @@ impl Container {
     /// ```
     pub fn pull<P: AsRef<Path>>(&mut self, source: &str, dest: P, recursive: bool) -> io::Result<()> {
         if recursive {
-            lxc(&["file", "pull", "-r", &format!("{}/{}", self.name, source), &format!("{}", dest.as_ref().display())])
+            lxc(&[
+                "file",
+                "pull",
+                "--quiet",
+                "--recursive",
+                &format!("{}/{}", self.name, source),
+                &format!("{}", dest.as_ref().display())
+            ])
         } else {
-            lxc(&["file", "pull", &format!("{}/{}", self.name, source), &format!("{}", dest.as_ref().display())])
+            lxc(&[
+                "file",
+                "pull",
+                "--quiet",
+                &format!("{}/{}", self.name, source),
+                &format!("{}", dest.as_ref().display())
+            ])
         }
     }
 }
