@@ -34,7 +34,7 @@ impl Container {
     /// ```
     pub fn new(location: Location, name: &str, base: &str) -> io::Result<Self> {
         let full_name = match location {
-            Location::Local => format!("{}", name),
+            Location::Local => name.to_string(),
             Location::Remote(remote) => format!("{}:{}", remote, name)
         };
 
@@ -73,7 +73,7 @@ impl Container {
     /// ```
     pub unsafe fn new_privileged(location: Location, name: &str, base: &str) -> io::Result<Self> {
         let full_name = match location {
-            Location::Local => format!("{}", name),
+            Location::Local => name.to_string(),
             Location::Remote(remote) => format!("{}:{}", remote, name)
         };
 

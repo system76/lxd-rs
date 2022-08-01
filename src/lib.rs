@@ -1,9 +1,5 @@
 //! A Rust library for controlling LXD
 
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
-
 use std::process::{Command, Stdio};
 use std::io;
 
