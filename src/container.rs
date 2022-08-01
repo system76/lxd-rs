@@ -40,6 +40,9 @@ impl Container {
 
         lxc(&["launch", base, &full_name, "-e", "-n", "lxdbr0"])?;
 
+        // XXX: https://bugzilla.redhat.com/show_bug.cgi?id=1419315
+        lxc(&["exec", &full_name, "--mode=non-interactive", "-n", "--", "touch", "/etc/fstab"])?;
+
         // Hack to wait for network up and running
         lxc(&["exec", &full_name, "--mode=non-interactive", "-n", "--", "dhclient"])?;
 
@@ -80,6 +83,9 @@ impl Container {
         lxc(&["launch", base, &full_name, "-e", "-n", "lxdbr0",
             "-c", "security.privileged=true",
             "-c", "raw.lxc=lxc.apparmor.profile=unconfined"])?;
+
+        // XXX: https://bugzilla.redhat.com/show_bug.cgi?id=1419315
+        lxc(&["exec", &full_name, "--mode=non-interactive", "-n", "--", "touch", "/etc/fstab"])?;
 
         // Hack to wait for network up and running
         lxc(&["exec", &full_name, "--mode=non-interactive", "-n", "--", "dhclient"])?;
